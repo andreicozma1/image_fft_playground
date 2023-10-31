@@ -148,7 +148,7 @@ def get_ifft_image(fft):
 
 def fft_mag_image(fft):
     print("-" * 80)
-    print("fft_mag_image: ")
+    print(f"fft_mag_image: {fft.shape}")
 
     fft_mag = np.abs(fft)
     fft_mag = np.log(fft_mag + 1)
@@ -163,7 +163,7 @@ def fft_mag_image(fft):
 
 def fft_phase_image(fft):
     print("-" * 80)
-    print("fft_phase_image: ")
+    print(f"fft_phase_image: {fft.shape}")
 
     fft_phase = np.angle(fft)
     fft_phase = fft_phase + np.pi
@@ -171,7 +171,7 @@ def fft_phase_image(fft):
 
     # scale 0 to 1
     fft_phase = (fft_phase - np.min(fft_phase)) / (
-        np.max(fft_phase) - np.min(fft_phase)
+        np.max(fft_phase) - np.min(fft_phase) + 1e-6
     )
     # scale to (0, 255)
     fft_phase = fft_phase * 255
