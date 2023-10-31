@@ -71,10 +71,7 @@ def pad_image_nextpow2(image):
     print("pad_image_nextpow2: ")
     print(ImageInfo.from_any(image))
 
-    if image.ndim == 2:
-        image = image[:, :, np.newaxis]
-
-    assert image.ndim == 3, f"Expected image.ndim == 3. Got {image.ndim}"
+    assert image.ndim in (2, 3), f"Expected 2D or 3D image. Got {image.ndim}D."
 
     height, width, channels = image.shape
     height_new = nextpow2(height)
@@ -89,6 +86,11 @@ def pad_image_nextpow2(image):
             (height_diff // 2, height_diff - height_diff // 2),
             (width_diff // 2, width_diff - width_diff // 2),
             (0, 0),
+        )
+        if channels == 3
+        else (
+            (height_diff // 2, height_diff - height_diff // 2),
+            (width_diff // 2, width_diff - width_diff // 2),
         ),
         mode="constant",
         # mode="edge",
