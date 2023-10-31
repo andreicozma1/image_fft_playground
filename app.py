@@ -216,6 +216,7 @@ def onclick_process_fft(state, inp_image, mask_opacity, inverted_mask, pad):
     image_phase = fft_phase_image(get_fft(image_final))
 
     return (
+        state,
         [
             (image_final, "Input Image (Final)"),
             (image_mag, "FFT Magnitude (Original)"),
@@ -293,6 +294,7 @@ def update_image_input(state, selection):
     image = np.array(image)
     state["inp_image"] = image
     return (
+        state,
         image,
         [image],
         None,
@@ -306,6 +308,7 @@ def clear_image_input(state):
     print("clear_image_input:")
     state["inp_image"] = None
     return (
+        state,
         None,
         [],
         None,
@@ -419,33 +422,33 @@ with gr.Blocks(css=css) as demo:
     inp_image.clear(
         clear_image_input,
         [state],
-        [inp_samples, out_gallery, out_fft_mag, out_fft_phase, out_ifft],
+        [state, inp_samples, out_gallery, out_fft_mag, out_fft_phase, out_ifft],
     )
 
     # Set up event listener for the Dropdown component to update the image input
     inp_samples.change(
         update_image_input,
         [state, inp_samples],
-        [inp_image, out_gallery, out_fft_mag, out_fft_phase, out_ifft],
+        [state, inp_image, out_gallery, out_fft_mag, out_fft_phase, out_ifft],
     )
 
     # Set up events for fft processing
     btn_fft.click(
         onclick_process_fft,
         [state, inp_image, inp_mask_opacity, inp_invert_mask, inp_pad],
-        [out_gallery, out_fft_mag, out_fft_phase],
+        [state, out_gallery, out_fft_mag, out_fft_phase],
     )
 
     out_fft_mag.clear(
         onclick_process_fft,
         [state, inp_image, inp_mask_opacity, inp_invert_mask, inp_pad],
-        [out_gallery, out_fft_mag, out_fft_phase],
+        [state, out_gallery, out_fft_mag, out_fft_phase],
     )
 
     out_fft_phase.clear(
         onclick_process_fft,
         [state, inp_image, inp_mask_opacity, inp_invert_mask, inp_pad],
-        [out_gallery, out_fft_mag, out_fft_phase],
+        [state, out_gallery, out_fft_mag, out_fft_phase],
     )
 
     # inp_image.edit(
