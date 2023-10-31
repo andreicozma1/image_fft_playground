@@ -391,7 +391,7 @@ with gr.Blocks(css=css) as demo:
 
     out_fft_mag = gr.Image(
         label="FFT Magnitude",
-        height=512,
+        # height=512,
         type="numpy",
         interactive=True,
         # source="canvas",
@@ -401,7 +401,7 @@ with gr.Blocks(css=css) as demo:
     )
     out_fft_phase = gr.Image(
         label="FFT Phase",
-        height=512,
+        # height=512,
         type="numpy",
         interactive=True,
         # source="canvas",
