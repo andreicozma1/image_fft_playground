@@ -5,7 +5,7 @@ from PIL import Image
 from scipy.ndimage import gaussian_filter
 
 
-def create_blank_image(size=256):
+def create_blank_image(size=512):
     img = np.ones((size, size)) * 255
     return img.astype(np.uint8)
 

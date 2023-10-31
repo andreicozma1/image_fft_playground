@@ -389,26 +389,29 @@ with gr.Blocks(css=css) as demo:
 
     btn_fft = gr.Button("Process FFT")
 
-    out_fft_mag = gr.Image(
-        label="FFT Magnitude",
-        # height=512,
-        type="numpy",
-        interactive=True,
-        # source="canvas",
-        tool="sketch",
-        mask_opacity=1.0,
-        elem_classes=["fft_mag"],
-    )
-    out_fft_phase = gr.Image(
-        label="FFT Phase",
-        # height=512,
-        type="numpy",
-        interactive=True,
-        # source="canvas",
-        tool="sketch",
-        mask_opacity=1.0,
-        elem_classes=["fft_phase"],
-    )
+    with gr.Row():
+        out_fft_mag = gr.Image(
+            label="FFT Magnitude",
+            height=512,
+            width=512,
+            type="numpy",
+            interactive=True,
+            # source="canvas",
+            tool="sketch",
+            mask_opacity=1.0,
+            elem_classes=["fft_mag"],
+        )
+        out_fft_phase = gr.Image(
+            label="FFT Phase",
+            height=512,
+            width=512,
+            type="numpy",
+            interactive=True,
+            # source="canvas",
+            tool="sketch",
+            mask_opacity=1.0,
+            elem_classes=["fft_phase"],
+        )
 
     btn_ifft = gr.Button("Process IFFT")
 
