@@ -385,7 +385,7 @@ with gr.Blocks(css=css) as demo:
     btn_fft = gr.Button("Process FFT")
 
     out_fft_mag = gr.Image(
-        label="FFT Magnitude Spectrum",
+        label="FFT Magnitude",
         height=512,
         type="numpy",
         interactive=True,
@@ -395,7 +395,7 @@ with gr.Blocks(css=css) as demo:
         elem_classes=["fft_mag"],
     )
     out_fft_phase = gr.Image(
-        label="FFT Phase Spectrum",
+        label="FFT Phase",
         height=512,
         type="numpy",
         interactive=True,
