@@ -259,8 +259,8 @@ def onclick_process_ifft(state, mag_and_mask, phase_and_mask):
     return (
         [
             (image, "Input Image (Final)"),
-            (image_mag, "FFT Magnitude (Filtered)"),
-            (image_phase, "FFT Phase (Filtered)"),
+            (image_mag, "FFT Magnitude (Final)"),
+            (image_phase, "FFT Phase (Final)"),
         ],
         ifft_image,
     )
