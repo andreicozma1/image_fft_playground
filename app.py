@@ -192,7 +192,7 @@ def onclick_process_fft(state, inp_image, mask_opacity, inverted_mask, pad):
         print("mask:", ImageInfo.from_any(image))
 
         image = Image.fromarray(image)
-        mask = Image.fromarray(mask)
+        mask = Image.fromarray(mask).convert(image.mode)
 
         if not inverted_mask:
             mask = ImageOps.invert(mask)
