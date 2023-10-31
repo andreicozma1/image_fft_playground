@@ -279,7 +279,10 @@ def update_image_input(state, selection):
     print(f"selection: {selection}")
     if not selection:
         white_image = get_start_image()
+        state["inp_image"] = white_image
+
         return (
+            state,
             white_image,
             [white_image],
             None,
