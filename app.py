@@ -110,10 +110,10 @@ def pad_image_nextpow2(image):
 
 def get_fft(image):
     print("-" * 80)
-    print("get_fft: ")
+    print(f"get_fft: {image.shape}")
     print("image:", ImageInfo.from_any(image))
 
-    fft = np.fft.fft2(image, axes=(0, 1, 2))
+    fft = np.fft.fft2(image, axes=np.arange(image.ndim))
     fft = np.fft.fftshift(fft)
 
     return fft
@@ -121,10 +121,10 @@ def get_fft(image):
 
 def get_ifft_image(fft):
     print("-" * 80)
-    print("get_ifft_image: ")
+    print(f"get_ifft_image: {fft.shape}")
 
     ifft = np.fft.ifftshift(fft)
-    ifft = np.fft.ifft2(ifft, axes=(0, 1, 2))
+    ifft = np.fft.ifft2(ifft, axes=np.arange(fft.ndim))
 
     # we only need the real part
     ifft_image = np.real(ifft)
