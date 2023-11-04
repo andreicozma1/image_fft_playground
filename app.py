@@ -5,6 +5,7 @@ import gradio as gr
 import numpy as np
 from PIL import Image, ImageChops, ImageOps
 
+samples_dir = "./samples"
 
 class ImageInfo:
     def __init__(
@@ -290,7 +291,7 @@ def update_image_input(state, selection):
             None,
         )
 
-    image_path = os.path.join("./images", selection)
+    image_path = os.path.join(samples_dir, selection)
     print(f"image_path: {image_path}")
     if not os.path.exists(image_path):
         raise gr.Error(f"Image not found: {image_path}")
@@ -353,7 +354,7 @@ with gr.Blocks(css=css) as demo:
                 mask_opacity=1.0,
                 elem_classes=["inp_img"],
             )
-            files = os.listdir("./images")
+            files = os.listdir(samples_dir)
             files = sorted(files)
             inp_samples = gr.Dropdown(
                 choices=files,
