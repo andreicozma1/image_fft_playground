@@ -6,25 +6,25 @@ from scipy.ndimage import gaussian_filter
 
 
 def create_blank_image(size=512):
-    img = np.ones((size, size)) * 255
+    img = np.zeros((size, size))
     return img.astype(np.uint8)
 
 
 def add_horizontal_lines(image, spacing=10):
     for i in range(0, image.shape[0], spacing):
-        image[i, :] = 0
+        image[i, :] = 255
     return image
 
 
 def add_vertical_lines(image, spacing=10):
     for i in range(0, image.shape[1], spacing):
-        image[:, i] = 0
+        image[:, i] = 255
     return image
 
 
 def add_diagonal_lines(image, spacing=10):
     for i in range(0, image.shape[0], spacing):
-        np.fill_diagonal(image[i:, i:], 0)
+        np.fill_diagonal(image[i:, i:], 255)
     return image
 
 
@@ -35,18 +35,18 @@ def add_circle(image, radius=50):
         -center_y : image.shape[0] - center_y, -center_x : image.shape[1] - center_x
     ]
     mask = x * x + y * y <= radius * radius
-    image[mask] = 0
+    image[mask] = 255
     return image
 
 
 def add_checkerboard(image, square_size=16):
     for i in range(0, image.shape[0], square_size * 2):
         for j in range(0, image.shape[1], square_size * 2):
-            image[i : i + square_size, j : j + square_size] = 0
+            image[i : i + square_size, j : j + square_size] = 255
             image[
                 i + square_size : i + square_size * 2,
                 j + square_size : j + square_size * 2,
-            ] = 0
+            ] = 255
     return image
 
 
