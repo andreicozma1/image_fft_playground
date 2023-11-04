@@ -25,9 +25,9 @@ Huggingface Spaces Demo: <https://huggingface.co/spaces/acozma/image_fft_playgro
 
 ## Example Screenshots
 
-![Generate FFT](image.png)
+![Generate FFT](./res/screenshot1.png)
 
-![Generate IFFT](image-1.png)
+![Generate IFFT](./res/screenshot2.png)
 
 ## Known Bugs
 
