@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 import streamlit as st
+import PIL
 from PIL import Image, ImageChops, ImageOps
 from streamlit_drawable_canvas import st_canvas
 
@@ -10,6 +11,7 @@ from utils import *
 
 def process_fft(inp_image, pad):
     if inp_image is None:
+        print("Arg inp_image is None")
         raise ValueError("inp_image must not be None.")
 
     if pad:
@@ -22,9 +24,11 @@ def process_fft(inp_image, pad):
 
 def process_ifft(fft, mag_canvas, phase_canvas):
     if mag_canvas is None or phase_canvas is None:
+        print("Arg mag_canvas or phase_canvas is None")
         raise ValueError("mag_canvas and phase_canvas must not be None.")
 
     if fft is None:
+        print("Arg fft is None")
         raise ValueError("fft must not be None.")
 
     # Normalize the drawn modifications to a range compatible with the FFT
@@ -51,8 +55,17 @@ def process_ifft(fft, mag_canvas, phase_canvas):
 
 
 def main():
+    # define state for image 
+    if 'image' not in st.session_state:
+        st.session_state['image'] = None
+    if 'fft' not in st.session_state:
+        st.session_state['fft'] = None
+    # if 'image_fft_mag_mask' not in st.session_state:
+    st.session_state['image_fft_mag_mask'] = None    
+    # if 'image_fft_phase_mask' not in st.session_state:
+    st.session_state['image_fft_phase_mask'] = None
+        
     st.set_page_config(layout="wide")
-
     st.title("Image FFT and IFFT Processor")
 
     st.sidebar.header("Input Image Controls")
@@ -64,8 +77,8 @@ def main():
     input_stroke_width = st.sidebar.slider(
         "Input Stroke width: ",
         1,
-        25,
-        3,
+        40,
+        15,
         key="input_stroke_width",
     )
 
@@ -102,14 +115,16 @@ def main():
         8,
         key="fft_stroke_width",
     )
+    
+    image_black = Image.new("RGBA", (512, 512), "#000000")
 
     if uploaded_file is not None:
-        bg_image = Image.open(uploaded_file).convert("RGBA")
+        bg_image = PIL.Image.open(uploaded_file).convert("RGBA")
     elif selected_example != "None":
         bg_image_path = os.path.join("./images", selected_example)
-        bg_image = Image.open(bg_image_path).convert("RGBA")
+        bg_image = PIL.Image.open(bg_image_path).convert("RGBA")
     else:
-        bg_image = Image.new("RGBA", (512, 512), input_fill_color)
+        bg_image = PIL.Image.new("RGBA", (512, 512), input_fill_color)
 
     io_cols = st.columns(2)
     with io_cols[0]:
@@ -122,33 +137,64 @@ def main():
             update_streamlit=True,
             width=bg_image.width,
             height=bg_image.height,
-            drawing_mode=input_drawing_mode,
+            drawing_mode=str(input_drawing_mode),
             key="canvas",
         )
+
+    print("HERE1")
 
     if canvas_result is None or canvas_result.image_data is None:
         st.error("Waiting for Canvas to be initialized.")
         return
-
-    drawn_image = Image.fromarray(canvas_result.image_data.astype(np.uint8)).convert(
+    
+    print("HERE2")
+    
+    image = Image.fromarray(canvas_result.image_data.astype(np.uint8)).convert(
         "RGBA"
     )
     # Resize drawn_image to match the dimensions of bg_image if necessary
-    if drawn_image.size != bg_image.size:
-        drawn_image = drawn_image.resize(bg_image.size)
-    input_image = Image.alpha_composite(bg_image, drawn_image)
-
-    input_image = np.array(input_image)
-    image_fft = process_fft(
-        input_image,
+    if image.size != bg_image.size:
+        print(f"WARNING: drawn_image size does not match bg_image size. {image.size} != {bg_image.size}")
+    #     drawn_image = drawn_image.resize(bg_image.size)
+    image = Image.alpha_composite(bg_image, image)
+    
+    image_fft_old = st.session_state['fft']
+    image_fft_new = process_fft(
+        np.array(image),
         pad=True,
     )
+    
+    image_fft_same = np.array_equal(image_fft_new, image_fft_old)
+    if not image_fft_same:
+        st.session_state['fft'] = None
+        # st.session_state['image_fft_mag_mask'] = None
+        # st.session_state['image_fft_phase_mask'] = None
+            
+    print("HERE3")
+    
+    # button to process FFT
+    if st.button("Process FFT"):
+        st.session_state['fft'] = image_fft_new
+        
+    image_fft = st.session_state['fft']
+    if image_fft is None:
+        return
+    # image_fft = st.session_state['fft']
+    # if image_fft is None:
+    #     st.error("Waiting for click on Process FFT button.")
+    #     return
 
     fft_cols = st.columns(2)
 
+    mag_canvas = None
     with fft_cols[0]:
-        st.header("FFT Magnitude")
-        image_mag = Image.fromarray(fft_mag_image(image_fft))
+        color = "red"
+        if image_fft is not None:
+            color = "green"
+        st.header("FFT Magnitude", divider=color)
+        
+        image_mag = PIL.Image.fromarray(fft_mag_image(image_fft))
+        
         mag_canvas = st_canvas(
             fill_color="#FFFFFF",
             stroke_width=fft_stroke_width,
@@ -157,15 +203,21 @@ def main():
             update_streamlit=True,
             width=image_mag.width,
             height=image_mag.height,
-            drawing_mode=fft_drawing_mode,
+            drawing_mode=str(fft_drawing_mode),
             key="mag_canvas",
         )
         st.write("FFT Magnitude")
         st.write(ImageInfo.from_any(image_mag))
 
+    phase_canvas = None
     with fft_cols[1]:
-        st.header("FFT Magnitude")
-        image_phase = Image.fromarray(fft_phase_image(image_fft))
+        color = "red"
+        if image_fft is not None:
+            color = "green"
+        st.header("FFT Phase", divider=color)
+        
+        image_phase = PIL.Image.fromarray(fft_phase_image(image_fft))
+        
         phase_canvas = st_canvas(
             fill_color="#FFFFFF",
             stroke_width=fft_stroke_width,
@@ -174,7 +226,7 @@ def main():
             update_streamlit=True,
             width=image_phase.width,
             height=image_phase.height,
-            drawing_mode=fft_drawing_mode,
+            drawing_mode=str(fft_drawing_mode),
             key="phase_canvas",
         )
         st.write("FFT Phase")
@@ -182,18 +234,21 @@ def main():
 
     with io_cols[1]:
         st.header("IFFT Image")
+        
         if mag_canvas is None or mag_canvas.image_data is None:
             st.error("Waiting for FFT Magnitude Canvas to be initialized.")
             return
+        
         if phase_canvas is None or phase_canvas.image_data is None:
             st.error("Waiting for FFT Phase Canvas to be initialized.")
             return
+        
         ifft_image = process_ifft(
-            image_fft, mag_canvas.image_data, phase_canvas.image_data
-        )
+            image_fft, st.session_state['image_fft_mag_mask'], st.session_state['image_fft_phase_mask']
+        ) if image_fft is not None else None
         st.image(
             ifft_image,
-            caption=ImageInfo.from_any(ifft_image),
+            caption=str(ImageInfo.from_any(ifft_image)),
         )
 
 
